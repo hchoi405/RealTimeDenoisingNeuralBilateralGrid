@@ -10,7 +10,7 @@ nvcc -std=c++11 -c -o bilateral_kernels.cu.o bilateral_kernels.cu.cc \
   	${TF_CFLAGS[@]} -D GOOGLE_CUDA=1 -x cu -Xcompiler -fPIC --expt-relaxed-constexpr -DNDEBUG 
 
 g++ -std=c++11 -shared -o bilateral_kernels.so bilateral_kernels.cc \
-	-L /usr/local/cuda-9.0/lib64/ \
+	-L /usr/local/cuda/lib64/ \
 	bilateral_kernels.cu.o ${TF_CFLAGS[@]} -fPIC -lcudart ${TF_LFLAGS[@]} 
 
 rm bilateral_kernels.cu.o
