@@ -1,3 +1,21 @@
+# Images
+*.exr
+*.png
+
+# TF
+*.index
+*.data-00000-of-00001
+*.meta
+checkpoint
+*.tfrecords
+
+# Dataset
+*.txt
+dataset/
+
+# Misc.
+*.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
