@@ -54,6 +54,24 @@ def save_exr(image, filename, datatype=np.float16):
 	out = OpenEXR.OutputFile(filename, new_header)
 	out.writePixels(channel_data)
 
+def save_exr_multi(image, filename, channel_names, datatype=np.float16):
+	import OpenEXR
+	import Imath
+	HALF  = Imath.PixelType(Imath.PixelType.HALF)
+	
+	data = image.astype(datatype)
+	channels = {}
+	channel_data = {}
+
+	for i, c in enumerate(channel_names):
+		channels[c] = Imath.Channel(type=HALF)
+		channel_data[c] = data[:, :, i].tostring()
+
+	new_header = OpenEXR.Header(data.shape[1], data.shape[0])
+	new_header['channels'] = channels
+	out = OpenEXR.OutputFile(filename, new_header)
+	out.writePixels(channel_data)
+
 def save_image(image, filename, mode=None):
 	if image.dtype in [np.float16, np.float32, np.float64]:
 		image = clip_to_uint8(image)

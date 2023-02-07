@@ -7,4 +7,4 @@ docker rmi nbg
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) . -t nbg
 
 # Launch a container
-docker run --gpus all -dit -v `pwd`:/nbg nbg
+docker run --gpus all -dit -v `pwd`:/nbg -v /media/hchoi/extra:/dataset_falcor nbg 

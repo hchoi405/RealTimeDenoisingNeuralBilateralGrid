@@ -113,6 +113,14 @@ class dataLoader(object):
 						writer.write(example.SerializeToString())
 
 		else: # subset == 'test'
+			is_falcor = False
+			if len(subset.split('_')) > 1:
+				if subset.split('_')[1] == "Falcor":
+					is_falcor = True
+				else:
+					print("Wrong subset:", subset)
+					exit(-1)
+
 			for scene_name in self.scene_list:
 				print('Processing scene ', scene_name)
 				data_subdir = os.path.join(self.data_dir, scene_name)
@@ -122,24 +130,39 @@ class dataLoader(object):
 
 				for idx in range(self.image_start_idx, self.img_per_scene + self.image_start_idx):
 					print("	" + str(idx))
-					exr_name = str(idx) + '.exr'
-					albedo_path = os.path.join(data_subdir, 'inputs', 'albedo' + exr_name)
-					normal_path = os.path.join(data_subdir, 'inputs', 'shading_normal' + exr_name)
-					depth_path = os.path.join(data_subdir, 'depth_normalized', str(idx) + '.png')
-					noisy_path = os.path.join(data_subdir, 'radiance_accum', 'accum_color_noabd' + exr_name)
-					GT_path = os.path.join(data_subdir, 'inputs', 'reference' + exr_name)
+					if is_falcor:
+						exr_name = str(f'_{idx:04d}') + '.exr'
+						albedo_path = os.path.join(data_subdir, 'albedo' + exr_name)
+						normal_path = os.path.join(data_subdir, 'normal' + exr_name)
+						depth_path = os.path.join(data_subdir, 'depth' + exr_name)
+						noisy_path = os.path.join(data_subdir, 'accum' + exr_name)
+						GT_path = os.path.join(data_subdir, 'path' + exr_name)
 
-					# original albedo ranges between [0,1] ==> [0,1]
-					albedo = load_exr(albedo_path, datatype=np.float32)
-					# original normal ranges between [-1,1] ==> [0,1]
-					normal = (load_exr(normal_path, datatype=np.float32) + 1.0) * 0.5
-					# original depth ranges between [0,1] ==> [0,1]
-					depth = np.expand_dims(np.asarray(PIL.Image.open(depth_path)), axis=2)/255
-					# original noisy ranges between [0, infty] ==> [0,1] (tonempping)
-					noisy = load_exr(noisy_path, datatype=np.float16)
+						albedo = load_exr(albedo_path, datatype=np.float32)
+						normal = (load_exr(normal_path, datatype=np.float32) + 1.0) * 0.5
+						depth = load_exr(depth_path, datatype=np.float32)
+						depth /= np.max(depth)
+						noisy = load_exr(noisy_path, datatype=np.float32)
+						GT_full_image = load_exr(GT_path, datatype=np.float16)
 
-					# original GT ranges between [0, infty] ==> [0,1] (tonempping)
-					GT_full_image = load_exr(GT_path, datatype=np.float32)
+					else:
+						exr_name = str(idx) + '.exr'
+						albedo_path = os.path.join(data_subdir, 'inputs', 'albedo' + exr_name)
+						normal_path = os.path.join(data_subdir, 'inputs', 'shading_normal' + exr_name)
+						depth_path = os.path.join(data_subdir, 'depth_normalized', str(idx) + '.png')
+						noisy_path = os.path.join(data_subdir, 'radiance_accum', 'accum_color_noabd' + exr_name)
+						GT_path = os.path.join(data_subdir, 'inputs', 'reference' + exr_name)
+
+						# original albedo ranges between [0,1] ==> [0,1]
+						albedo = load_exr(albedo_path, datatype=np.float32)
+						# original normal ranges between [-1,1] ==> [0,1]
+						normal = (load_exr(normal_path, datatype=np.float32) + 1.0) * 0.5
+						# original depth ranges between [0,1] ==> [0,1]
+						depth = np.expand_dims(np.asarray(PIL.Image.open(depth_path)), axis=2)/255
+						# original noisy ranges between [0, infty] ==> [0,1] (tonempping)
+						noisy = load_exr(noisy_path, datatype=np.float16)
+						# original GT ranges between [0, infty] ==> [0,1] (tonempping)
+						GT_full_image = load_exr(GT_path, datatype=np.float32)
 
 					noisy_full_image = np.concatenate(
 						(noisy, albedo, normal, depth), axis=2)

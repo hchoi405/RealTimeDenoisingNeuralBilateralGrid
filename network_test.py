@@ -14,10 +14,13 @@ from tensorflow.python.client import timeline
 
 from data_loader import dataLoader
 from network import DenoiserGuideNet
-from image_utils import save_image, save_exr
+from image_utils import save_image, save_exr, save_exr_multi
 
-IMAGE_WIDTH = 1280
-IMAGE_HEIGHT = 720
+# IMAGE_WIDTH = 1280
+# IMAGE_HEIGHT = 720
+IMAGE_WIDTH = 1920
+IMAGE_HEIGHT = 1080
+SUBSET = 'test_Falcor'
 
 INPUT_CHANNEL = 10
 TARGET_CHANNEL = 3
@@ -79,7 +82,7 @@ if __name__ == "__main__":
 	os.makedirs(errorlog_dir, exist_ok=True)
 	os.makedirs(summarylog_dir, exist_ok=True)
 
-	test_data = dataLoader(data_dir=data_dir, subset='test',
+	test_data = dataLoader(data_dir=data_dir, subset=SUBSET,
 						   image_start_idx=args.target_frame,
 						   img_per_scene=test_per_scene,
 						   scene_list=scene_test_list)
@@ -148,6 +151,11 @@ if __name__ == "__main__":
 
 			for k in range(0, src_hdr.shape[0]): 
 				idx_all = batch_cnt * test_batch_size + k
+				save_exr_multi(src_hdr[0,:,:,:], os.path.join(result_dir, f'{idx_all}_input.exr'), 
+					['color.R', 'color.G', 'color.B',
+					'albedo.R', 'albedo.G', 'albedo.B',
+					'normal.R', 'normal.G', 'normal.B',
+					'depth.Z'])
 				save_image(tone_mapping(src_hdr[k,:,:,0:3]), 
 					os.path.join(result_dir, '%d_src.png'%idx_all), 'RGB')
 				save_image(tone_mapping(tgt_hdr[k,:,:,:]), 
