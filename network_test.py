@@ -170,9 +170,9 @@ if __name__ == "__main__":
 					save_image(guide_1[k, :, :], 
 						os.path.join(result_dir, '%d_guide_1.png'%idx_all))
 					save_image(guide_2[k, :, :],
-						os.path.join(result_dir, '%d_guide_1.png'%idx_all))
+						os.path.join(result_dir, '%d_guide_2.png'%idx_all))
 					save_image(guide_3[k, :, :],
-						os.path.join(result_dir, '%d_guide_1.png'%idx_all))
+						os.path.join(result_dir, '%d_guide_3.png'%idx_all))
 					save_image(weight_1[k,:, :],
 						os.path.join(result_dir, '%d_weight_1.png'%idx_all))
 					save_image(weight_2[k,:, :],
