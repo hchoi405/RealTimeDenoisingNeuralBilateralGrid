@@ -10,6 +10,9 @@ import time
 import argparse
 import numpy as np
 import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tensorflow.python.util import deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
 from tensorflow.python.client import timeline
 
 from data_loader import dataLoader
@@ -107,7 +110,7 @@ if __name__ == "__main__":
 	saver = tf.train.Saver()
 	config = tf.ConfigProto(allow_soft_placement=True, graph_options=tf.GraphOptions(
 		optimizer_options=tf.OptimizerOptions(opt_level=tf.OptimizerOptions.L0)))
-	config.gpu_options.allow_growth = True
+	# config.gpu_options.allow_growth = True
 	sess = tf.Session(config=config)
 
 	run_metadata = tf.RunMetadata()
