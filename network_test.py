@@ -33,6 +33,7 @@ parser.add_argument('--export_exr',action='store_true')
 parser.add_argument('--export_grid_output',action='store_true')
 parser.add_argument('--export_guide_weight',action='store_true')
 parser.add_argument('--export_grid',action='store_true')
+parser.add_argument('-t', '--target_frame', type=int)
 args = parser.parse_args()
 
 data_dir = args.data_dir
@@ -79,7 +80,7 @@ if __name__ == "__main__":
 	os.makedirs(summarylog_dir, exist_ok=True)
 
 	test_data = dataLoader(data_dir=data_dir, subset='test',
-						   image_start_idx=0,
+						   image_start_idx=args.target_frame,
 						   img_per_scene=test_per_scene,
 						   scene_list=scene_test_list)
 
@@ -119,12 +120,14 @@ if __name__ == "__main__":
 	
 	# Test
 	print('Start Testing...')
-	batch_cnt = 0
+	batch_cnt = args.target_frame
 	sess.run(test_iterator.initializer)
 	test_handle = sess.run(test_iterator.string_handle())
 
 	while True:
 		try:
+			print('Testing...', batch_cnt)
+
 			src_hdr, tgt_hdr = sess.run(next_element_large,
 				feed_dict={handle_large: test_handle})
 			feed_dict = {guide_net['source']: src_hdr, guide_net['target']: tgt_hdr}
@@ -184,6 +187,9 @@ if __name__ == "__main__":
 				export_grid(result_dir, batch_cnt, grid_2, 'grid_2')
 				export_grid(result_dir, batch_cnt, grid_3, 'grid_3')
 			batch_cnt += 1
+
+			# Break here becase we want to render only target_frame
+			break
 		except tf.errors.OutOfRangeError:
 			print('Finish testing %d images.' % (batch_cnt * test_batch_size))
 			break
