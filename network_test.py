@@ -110,7 +110,7 @@ if __name__ == "__main__":
 	saver = tf.train.Saver()
 	config = tf.ConfigProto(allow_soft_placement=True, graph_options=tf.GraphOptions(
 		optimizer_options=tf.OptimizerOptions(opt_level=tf.OptimizerOptions.L0)))
-	# config.gpu_options.allow_growth = True
+	config.gpu_options.allow_growth = True
 	sess = tf.Session(config=config)
 
 	run_metadata = tf.RunMetadata()
@@ -154,25 +154,25 @@ if __name__ == "__main__":
 
 			for k in range(0, src_hdr.shape[0]): 
 				idx_all = batch_cnt * test_batch_size + k
-				save_exr_multi(src_hdr[0,:,:,:], os.path.join(result_dir, f'{idx_all}_input.exr'), 
-					['color.R', 'color.G', 'color.B',
-					'albedo.R', 'albedo.G', 'albedo.B',
-					'normal.R', 'normal.G', 'normal.B',
-					'depth.Z'])
-				save_image(tone_mapping(src_hdr[k,:,:,0:3]), 
-					os.path.join(result_dir, '%d_src.png'%idx_all), 'RGB')
-				save_image(tone_mapping(tgt_hdr[k,:,:,:]), 
-					os.path.join(result_dir, '%d_tgt.png'%idx_all), 'RGB')
-				save_image(tone_mapping(denoised_hdr[k,:,:,:]), 
-					os.path.join(result_dir, '%d_rcn.png'%idx_all), 'RGB')
+				# save_exr_multi(src_hdr[0,:,:,:], os.path.join(result_dir, f'{idx_all}_input.exr'), 
+				# 	['color.R', 'color.G', 'color.B',
+				# 	'albedo.R', 'albedo.G', 'albedo.B',
+				# 	'normal.R', 'normal.G', 'normal.B',
+				# 	'depth.Z'])
+				# save_image(tone_mapping(src_hdr[k,:,:,0:3]), 
+				# 	os.path.join(result_dir, '%d_src.png'%idx_all), 'RGB')
+				# save_image(tone_mapping(tgt_hdr[k,:,:,:]), 
+				# 	os.path.join(result_dir, '%d_tgt.png'%idx_all), 'RGB')
+				# save_image(tone_mapping(denoised_hdr[k,:,:,:]), 
+				# 	os.path.join(result_dir, '%d_rcn.png'%idx_all), 'RGB')
 
 				if args.export_exr:
-					save_exr(src_hdr[k,:,:,0:3], 
-						os.path.join(result_dir, '%d_src.exr'%idx_all))
-					save_exr(tgt_hdr[k,:,:,:], 
-						os.path.join(result_dir, '%d_tgt.exr'%idx_all))
-					save_exr(denoised_hdr[k,:,:,:], 
-						os.path.join(result_dir, '%d_rcn.exr'%idx_all))
+					# save_exr(src_hdr[k,:,:,0:3], 
+					# 	os.path.join(result_dir, '%d_src.exr'%idx_all))
+					# save_exr(tgt_hdr[k,:,:,:], 
+					# 	os.path.join(result_dir, '%d_tgt.exr'%idx_all))
+					save_exr(np.clip(denoised_hdr[k,:,:,:], a_min=0, a_max=None), 
+						os.path.join(result_dir, 'rcn_%04d.exr'%idx_all))
 				if args.export_grid_output:
 					save_image(tone_mapping(from_grid_hdr_1[k,:,:,:]), 
 						os.path.join(result_dir, '%d_from_grid_1.png'%idx_all), 'RGB')

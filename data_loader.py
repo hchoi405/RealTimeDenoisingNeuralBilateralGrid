@@ -143,7 +143,7 @@ class dataLoader(object):
 						depth = load_exr(depth_path, datatype=np.float32)
 						depth /= np.max(depth)
 						noisy = load_exr(noisy_path, datatype=np.float32)
-						GT_full_image = load_exr(GT_path, datatype=np.float16)
+						GT_full_image = load_exr(GT_path, datatype=np.float32)
 
 					else:
 						exr_name = str(idx) + '.exr'
