@@ -82,12 +82,12 @@ if __name__ == "__main__":
 	model_dir = os.path.join(scene_test_list[0], 'model')
 	result_dir = os.path.join(scene_test_list[0], 'result', 'test_out')
 	errorlog_dir = os.path.join(scene_test_list[0], 'errorlog')
-	summarylog_dir = os.path.join(scene_test_list[0], 'summarylog')
+	# summarylog_dir = os.path.join(scene_test_list[0], 'summarylog')
 
 	os.makedirs(model_dir, exist_ok=True)
 	os.makedirs(result_dir, exist_ok=True)
 	os.makedirs(errorlog_dir, exist_ok=True)
-	os.makedirs(summarylog_dir, exist_ok=True)
+	# os.makedirs(summarylog_dir, exist_ok=True)
 
 	train_data = dataLoader(data_dir=data_dir, subset='train',
 							patch_width=patch_width,
@@ -152,8 +152,8 @@ if __name__ == "__main__":
 
 	print('Start Training: ')
 	min_loss = 10000
-	summary_merge = tf.summary.merge_all()
-	summary_writer = tf.summary.FileWriter(summarylog_dir, graph=sess.graph)
+	# summary_merge = tf.summary.merge_all()
+	# summary_writer = tf.summary.FileWriter(summarylog_dir, graph=sess.graph)
 	begin_time_train = time.time()
 	
 	train_handle = sess.run(train_iterator.string_handle())
@@ -175,8 +175,8 @@ if __name__ == "__main__":
 				src_hdr, tgt_hdr = sess.run(next_element_small,
 					feed_dict={handle_small: train_handle})
 				feed_dict = {guide_net['source']: src_hdr, guide_net['target']: tgt_hdr}
-				summary, denoised_hdr, batch_loss, _ = sess.run(
-					[summary_merge, guide_net['denoised_hdr'], loss_all_L1, train_step1], feed_dict)
+				denoised_hdr, batch_loss, _ = sess.run(
+					[guide_net['denoised_hdr'], loss_all_L1, train_step1], feed_dict)
 				## Uncomment the next line to export training summary
 				# summary_writer.add_summary(summary, epoch_i)
 				
@@ -277,7 +277,7 @@ if __name__ == "__main__":
 	np.savetxt(os.path.join(errorlog_dir, 'loss_valid.txt'),
 		valid_loss_epoch_mean, fmt='%.8f', delimiter=',')
 
-	summary_writer.close()
+	# summary_writer.close()
 	sess.close()
 
 
