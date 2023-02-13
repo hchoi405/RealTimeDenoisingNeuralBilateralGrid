@@ -19,12 +19,6 @@ from data_loader import dataLoader
 from network import DenoiserGuideNet
 from image_utils import save_image, save_exr, save_exr_multi
 
-# IMAGE_WIDTH = 1280
-# IMAGE_HEIGHT = 720
-IMAGE_WIDTH = 1920
-IMAGE_HEIGHT = 1080
-SUBSET = 'test_Falcor'
-
 INPUT_CHANNEL = 10
 TARGET_CHANNEL = 3
 
@@ -39,6 +33,7 @@ parser.add_argument('--export_exr',action='store_true')
 parser.add_argument('--export_grid_output',action='store_true')
 parser.add_argument('--export_guide_weight',action='store_true')
 parser.add_argument('--export_grid',action='store_true')
+parser.add_argument('-s', '--subset', default='test_Falcor')
 parser.add_argument('-t', '--target_frame', type=int)
 args = parser.parse_args()
 
@@ -46,6 +41,14 @@ data_dir = args.data_dir
 scene_test_list = args.dataset_name.split(' ')
 test_batch_size = args.batch_size
 test_per_scene = args.test_size
+subset = args.subset
+
+if 'Falcor' in subset:
+	IMAGE_WIDTH = 1920
+	IMAGE_HEIGHT = 1080
+else:
+	IMAGE_WIDTH = 1280
+	IMAGE_HEIGHT = 720
 
 def tone_mapping(input_image):
 	tone_mapped_color = np.clip(
@@ -85,7 +88,7 @@ if __name__ == "__main__":
 	os.makedirs(errorlog_dir, exist_ok=True)
 	os.makedirs(summarylog_dir, exist_ok=True)
 
-	test_data = dataLoader(data_dir=data_dir, subset=SUBSET,
+	test_data = dataLoader(data_dir=data_dir, subset=subset,
 						   image_start_idx=args.target_frame,
 						   img_per_scene=test_per_scene,
 						   scene_list=scene_test_list)
@@ -172,7 +175,7 @@ if __name__ == "__main__":
 					# save_exr(tgt_hdr[k,:,:,:], 
 					# 	os.path.join(result_dir, '%d_tgt.exr'%idx_all))
 					save_exr(np.clip(denoised_hdr[k,:,:,:], a_min=0, a_max=None), 
-						os.path.join(result_dir, 'rcn_%04d.exr'%idx_all))
+						os.path.join(result_dir, 'nbg_%04d.exr'%idx_all))
 				if args.export_grid_output:
 					save_image(tone_mapping(from_grid_hdr_1[k,:,:,:]), 
 						os.path.join(result_dir, '%d_from_grid_1.png'%idx_all), 'RGB')
