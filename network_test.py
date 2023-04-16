@@ -35,6 +35,7 @@ parser.add_argument('--export_guide_weight',action='store_true')
 parser.add_argument('--export_grid',action='store_true')
 parser.add_argument('-s', '--subset', default='test_Falcor')
 parser.add_argument('-t', '--target_frame', type=int)
+parser.add_argument('-m', '--model', type=str, default='classroom')
 args = parser.parse_args()
 
 data_dir = args.data_dir
@@ -78,10 +79,10 @@ def _parse_function_testdata(proto):
 	return (train_input, train_target)
 
 if __name__ == "__main__":
-	model_dir = os.path.join(scene_test_list[0], 'model')
-	result_dir = os.path.join(scene_test_list[0], 'result', 'test_out')
-	errorlog_dir = os.path.join(scene_test_list[0], 'errorlog')
-	summarylog_dir = os.path.join(scene_test_list[0], 'summarylog')
+	model_dir = os.path.join(f'models/{args.model}')
+	result_dir = os.path.join(f'results/{scene_test_list[0]}', 'result', 'test_out')
+	errorlog_dir = os.path.join(f'results/{scene_test_list[0]}', 'errorlog')
+	summarylog_dir = os.path.join(f'results/{scene_test_list[0]}', 'summarylog')
 
 	os.makedirs(model_dir, exist_ok=True)
 	os.makedirs(result_dir, exist_ok=True)

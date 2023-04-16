@@ -138,7 +138,7 @@ class dataLoader(object):
 						normal_path = os.path.join(data_subdir, 'normal' + exr_name)
 						depth_path = os.path.join(data_subdir, 'depth' + exr_name)
 						noisy_path = os.path.join(data_subdir, 'accum' + exr_name)
-						GT_path = os.path.join(data_subdir, 'path' + exr_name)
+						GT_path = os.path.join(data_subdir, 'current' + exr_name) # temporary use current
 
 						albedo = load_exr(albedo_path, datatype=np.float32)
 						normal = (load_exr(normal_path, datatype=np.float32) + 1.0) * 0.5

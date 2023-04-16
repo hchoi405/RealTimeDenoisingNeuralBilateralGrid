@@ -4,15 +4,18 @@
 # ./bilateral_kernels.sh
 # cd ../
 
-scenes=( "arcade_anim" "bistro_anim" "bistro2_anim" "bistroWine_anim" "suntemple_anim" "zeroday_anim" )
+scenes=( "data_Arcade" "data_BistroExterior" "data_BistroExterior2" "data_Classroom" "data_Dining-room" "data_Dining-room-dynamic" "data_Staircase" )
+num_frames=(103 103 103 603 103 141 453)
 
+# Iterate scenes and frames
 for scene in "${scenes[@]}"; do
-   for i in {0..100}
-   do
-      python network_test.py -r /dataset_falcor -d $scene --export_exr -ts 100 -t $i
+   frames=${num_frames[$scene]}
+   echo "Processing scene: $scene, total frame: $frames"
+   for ((i=0; i<frames; i++)); do
+      python network_test.py -s test_Falcor -r /dataset_falcor -d $scene -ts $frames -t $i --export_exr
       mkdir -p output/$scene
-      mv $scene/result/test_out/* output/$scene
+      mv results/$scene/result/test_out/* output/$scene
    done
 done
 
-# python network_test.py -r ./dataset -d classroom --export_exr --export_guide_weight -ts 60 -t 0
+# python network_test.py -s test -r ./dataset -d classroom --export_exr -ts 60 -t 0

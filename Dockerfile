@@ -9,7 +9,7 @@ RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
 
 # # Fix GPG key error
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
-RUN apt update -y && apt install apt-transport-https wget
+RUN apt update -y && apt install -y apt-transport-https wget git
 
 # Install OpenEXR
 RUN apt update && apt install -y openexr libopenexr-dev
