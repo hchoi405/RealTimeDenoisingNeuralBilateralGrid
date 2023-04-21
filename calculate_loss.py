@@ -46,13 +46,23 @@ def psnr_loss(y_true, y_pred):
 
 # higher is better
 def ssim_loss(y_true, y_pred):
+    # HDR -> LDR
+    y_true = tone_mapping(y_true)
+    y_pred = tone_mapping(y_pred)
+
     val = structural_similarity(y_true, y_pred, multichannel=True, data_range=y_pred.max() - y_pred.min())
     return val
 
-
+img_cache = {}
 def load_frame(scene, model, loss_fn, i):
-    img_ref = exr.read_all(f'/dataset_falcor/{scene}/ref_modul_{i:04d}.exr')['default']
-    img_pred = exr.read_all(f'/nas/nbg/{scene}/{model}/nbg_{i:04d}.exr')['default']
+    ref_path = f'/dataset_falcor/{scene}/ref_modul_{i:04d}.exr'
+    pred_path = f'/nas/nbg/{scene}/{model}/nbg_{i:04d}.exr'
+    if ref_path not in img_cache:
+        img_cache[ref_path] = exr.read_all(ref_path)['default']
+    if pred_path not in img_cache:
+        img_cache[pred_path] = exr.read_all(pred_path)['default']
+    img_ref = img_cache[ref_path]
+    img_pred = img_cache[pred_path]
     return loss_fn(img_ref, img_pred)
 
 def compare_models(loss_fn):
@@ -88,7 +98,7 @@ def compare_models(loss_fn):
 
         model_errors = np.array(model_errors)
         avg_error = np.mean(model_errors, axis=1)
-        if loss_fn == ssim_loss:
+        if loss_fn == ssim_loss or loss_fn == psnr_loss:
             best_model_idx = np.argmax(avg_error)
         else:
             best_model_idx = np.argmin(avg_error)
