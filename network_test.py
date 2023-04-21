@@ -89,7 +89,9 @@ if __name__ == "__main__":
 	os.makedirs(errorlog_dir, exist_ok=True)
 	os.makedirs(summarylog_dir, exist_ok=True)
 
-	test_data = dataLoader(data_dir=data_dir, subset=subset,
+	test_data = dataLoader(data_dir=data_dir, 
+							scene_id=args.dataset_name, 
+							subset=subset,
 						   image_start_idx=args.target_frame,
 						   img_per_scene=test_per_scene,
 						   scene_list=scene_test_list)

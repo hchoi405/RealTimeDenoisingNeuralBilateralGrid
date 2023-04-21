@@ -9,7 +9,7 @@ RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
 
 # # Fix GPG key error
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
-RUN apt update -y && apt install -y apt-transport-https wget git
+RUN apt update -y && apt install -y apt-transport-https wget git vim rsync
 
 # Install OpenEXR
 RUN apt update && apt install -y openexr libopenexr-dev
@@ -18,7 +18,7 @@ RUN apt update && apt install -y openexr libopenexr-dev
 RUN pip install --upgrade pip
 
 # Install required python packages
-RUN pip install scipy scikit-image Pillow openexr
+RUN pip install scipy scikit-image Pillow openexr parmap tqdm
 
 # Add non-root user
 RUN groupadd -g $GID -o $USERNAME

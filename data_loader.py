@@ -19,6 +19,7 @@ class dataLoader(object):
 
 	def __init__(self,
 				 data_dir,
+				 scene_id,
 				 subset,
 				 image_start_idx,
 				 img_per_scene,
@@ -32,6 +33,7 @@ class dataLoader(object):
 		- batch_size is int
 		"""
 		self.data_dir = data_dir
+		self.scene_id = scene_id
 		self.subset = subset
 		self.patch_width = patch_width
 		self.patch_height = patch_height
@@ -44,7 +46,7 @@ class dataLoader(object):
 		self.load_dataset(subset)
 
 	def get_dataset_name(self):
-		dataset_name = 'bw_data_' + str(
+		dataset_name = f'bw_{self.scene_id}_' + str(
 			self.patch_height) + 'x' + str(self.patch_width) + '_' + str(
 			len(self.scene_list)) + 'scenes_' + str(self.img_per_scene) + 'ips_' + str(
 			self.patch_per_img) + 'ppi_' + self.subset + '.tfrecords'
