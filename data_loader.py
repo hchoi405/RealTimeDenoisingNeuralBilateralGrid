@@ -53,13 +53,9 @@ class dataLoader(object):
 		return os.path.join(dataset_name)
 
 	def load_dataset(self, subset):
-		if subset == 'train' or subset == 'valid':
-			if os.path.exists(self.dataset_name):
-				print(self.dataset_name, ' exisits.')  # all is good
-			else:
-				self.encode_to_tfrecords(subset)
+		if os.path.exists(self.dataset_name):
+			print(self.dataset_name, ' exisits.')  # all is good
 		else:
-			# Always create when test (becuase we launch only for singl frame)
 			self.encode_to_tfrecords(subset)
 
 	def encode_to_tfrecords(self, subset):
@@ -195,7 +191,6 @@ class dataLoader(object):
 					example = tf.train.Example(
 						features=tf.train.Features(feature=feature))
 					writer.write(example.SerializeToString())
-					break
 		writer.close()
 		print(self.subset, ' data preprocess finished.')
 

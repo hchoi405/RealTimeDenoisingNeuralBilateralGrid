@@ -92,7 +92,7 @@ if __name__ == "__main__":
 	test_data = dataLoader(data_dir=data_dir, 
 							scene_id=args.dataset_name, 
 							subset=subset,
-						   image_start_idx=args.target_frame,
+						   image_start_idx=0,
 						   img_per_scene=test_per_scene,
 						   scene_list=scene_test_list)
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 	
 	# Test
 	print('Start Testing...')
-	batch_cnt = args.target_frame
+	batch_cnt = 0
 	sess.run(test_iterator.initializer)
 	test_handle = sess.run(test_iterator.string_handle())
 
@@ -204,9 +204,6 @@ if __name__ == "__main__":
 				export_grid(result_dir, batch_cnt, grid_2, 'grid_2')
 				export_grid(result_dir, batch_cnt, grid_3, 'grid_3')
 			batch_cnt += 1
-
-			# Break here becase we want to render only target_frame
-			break
 		except tf.errors.OutOfRangeError:
 			print('Finish testing %d images.' % (batch_cnt * test_batch_size))
 			break
