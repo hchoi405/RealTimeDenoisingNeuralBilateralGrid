@@ -123,71 +123,79 @@ if __name__ == "__main__":
 	sess.run(test_iterator.initializer)
 	test_handle = sess.run(test_iterator.string_handle())
 
+	times = []
 	while True:
 		try:
+			print('Testing batch %d' % batch_cnt)
 			src_hdr, tgt_hdr = sess.run(next_element_large,
 				feed_dict={handle_large: test_handle})
 			feed_dict = {guide_net['source']: src_hdr, guide_net['target']: tgt_hdr}
 			
+			start_time = time.time()
 			guide_1, guide_2, guide_3, weight_1, weight_2, denoised_hdr, \
 			from_grid_hdr_1, from_grid_hdr_2, from_grid_hdr_3, \
 			grid_1, grid_2, grid_3, batch_loss = sess.run(
 				[guide_net['guide_1'], guide_net['guide_2'], guide_net['guide_3'], \
 				guide_net['weight_1'], guide_net['weight_2'], guide_net['denoised_hdr'],\
 				guide_net['from_grid_hdr_1'], guide_net['from_grid_hdr_2'], guide_net['from_grid_hdr_3'],
-				guide_net['grid_1'],guide_net['grid_2'],guide_net['grid_3'], guide_net['loss_all_L1']], feed_dict,
+				guide_net['grid_1'],guide_net['grid_2'],guide_net['grid_3'], guide_net['loss_all_L1']], feed_dict, 
 				options=run_options, run_metadata=run_metadata)
+			end_time = time.time()
+			times.append(end_time - start_time)
 
 			tl = timeline.Timeline(run_metadata.step_stats)
 			ctf = tl.generate_chrome_trace_format(show_memory=True)
 			with open(os.path.join(errorlog_dir, 'timeline.json'),'w') as wd:
 				wd.write(ctf)
 
-			for k in range(0, src_hdr.shape[0]): 
-				idx_all = batch_cnt * test_batch_size + k
-				save_image(tone_mapping(src_hdr[k,:,:,0:3]), 
-					os.path.join(result_dir, '%d_src.png'%idx_all), 'RGB')
-				save_image(tone_mapping(tgt_hdr[k,:,:,:]), 
-					os.path.join(result_dir, '%d_tgt.png'%idx_all), 'RGB')
-				save_image(tone_mapping(denoised_hdr[k,:,:,:]), 
-					os.path.join(result_dir, '%d_rcn.png'%idx_all), 'RGB')
+			# for k in range(0, src_hdr.shape[0]): 
+			# 	idx_all = batch_cnt * test_batch_size + k
+			# 	save_image(tone_mapping(src_hdr[k,:,:,0:3]), 
+			# 		os.path.join(result_dir, '%d_src.png'%idx_all), 'RGB')
+			# 	save_image(tone_mapping(tgt_hdr[k,:,:,:]), 
+			# 		os.path.join(result_dir, '%d_tgt.png'%idx_all), 'RGB')
+			# 	save_image(tone_mapping(denoised_hdr[k,:,:,:]), 
+			# 		os.path.join(result_dir, '%d_rcn.png'%idx_all), 'RGB')
 
-				if args.export_exr:
-					save_exr(src_hdr[k,:,:,0:3], 
-						os.path.join(result_dir, '%d_src.exr'%idx_all))
-					save_exr(tgt_hdr[k,:,:,:], 
-						os.path.join(result_dir, '%d_tgt.exr'%idx_all))
-					save_exr(denoised_hdr[k,:,:,:], 
-						os.path.join(result_dir, '%d_rcn.exr'%idx_all))
-				if args.export_grid_output:
-					save_image(tone_mapping(from_grid_hdr_1[k,:,:,:]), 
-						os.path.join(result_dir, '%d_from_grid_1.png'%idx_all), 'RGB')
-					save_image(tone_mapping(from_grid_hdr_2[k,:,:,:]), 
-						os.path.join(result_dir, '%d_from_grid_2.png'%idx_all), 'RGB')
-					save_image(tone_mapping(from_grid_hdr_3[k,:,:,:]), 
-						os.path.join(result_dir, '%d_from_grid_3.png'%idx_all), 'RGB')
-				if args.export_guide_weight:
-					save_image(guide_1[k, :, :], 
-						os.path.join(result_dir, '%d_guide_1.png'%idx_all))
-					save_image(guide_2[k, :, :],
-						os.path.join(result_dir, '%d_guide_2.png'%idx_all))
-					save_image(guide_3[k, :, :],
-						os.path.join(result_dir, '%d_guide_3.png'%idx_all))
-					save_image(weight_1[k,:, :],
-						os.path.join(result_dir, '%d_weight_1.png'%idx_all))
-					save_image(weight_2[k,:, :],
-						os.path.join(result_dir, '%d_weight_2.png'%idx_all))
-					save_image(1 - weight_1[k,:, :] - weight_2[k,:, :],
-						os.path.join(result_dir, '%d_weight_3.png'%idx_all))
-			if args.export_grid:
-				export_grid(result_dir, batch_cnt, grid_1, 'grid_1')
-				export_grid(result_dir, batch_cnt, grid_2, 'grid_2')
-				export_grid(result_dir, batch_cnt, grid_3, 'grid_3')
+			# 	if args.export_exr:
+			# 		save_exr(src_hdr[k,:,:,0:3], 
+			# 			os.path.join(result_dir, '%d_src.exr'%idx_all))
+			# 		save_exr(tgt_hdr[k,:,:,:], 
+			# 			os.path.join(result_dir, '%d_tgt.exr'%idx_all))
+			# 		save_exr(denoised_hdr[k,:,:,:], 
+			# 			os.path.join(result_dir, '%d_rcn.exr'%idx_all))
+			# 	if args.export_grid_output:
+			# 		save_image(tone_mapping(from_grid_hdr_1[k,:,:,:]), 
+			# 			os.path.join(result_dir, '%d_from_grid_1.png'%idx_all), 'RGB')
+			# 		save_image(tone_mapping(from_grid_hdr_2[k,:,:,:]), 
+			# 			os.path.join(result_dir, '%d_from_grid_2.png'%idx_all), 'RGB')
+			# 		save_image(tone_mapping(from_grid_hdr_3[k,:,:,:]), 
+			# 			os.path.join(result_dir, '%d_from_grid_3.png'%idx_all), 'RGB')
+			# 	if args.export_guide_weight:
+			# 		save_image(guide_1[k, :, :], 
+			# 			os.path.join(result_dir, '%d_guide_1.png'%idx_all))
+			# 		save_image(guide_2[k, :, :],
+			# 			os.path.join(result_dir, '%d_guide_2.png'%idx_all))
+			# 		save_image(guide_3[k, :, :],
+			# 			os.path.join(result_dir, '%d_guide_3.png'%idx_all))
+			# 		save_image(weight_1[k,:, :],
+			# 			os.path.join(result_dir, '%d_weight_1.png'%idx_all))
+			# 		save_image(weight_2[k,:, :],
+			# 			os.path.join(result_dir, '%d_weight_2.png'%idx_all))
+			# 		save_image(1 - weight_1[k,:, :] - weight_2[k,:, :],
+			# 			os.path.join(result_dir, '%d_weight_3.png'%idx_all))
+			# if args.export_grid:
+			# 	export_grid(result_dir, batch_cnt, grid_1, 'grid_1')
+			# 	export_grid(result_dir, batch_cnt, grid_2, 'grid_2')
+			# 	export_grid(result_dir, batch_cnt, grid_3, 'grid_3')
 			batch_cnt += 1
 		except tf.errors.OutOfRangeError:
 			print('Finish testing %d images.' % (batch_cnt * test_batch_size))
 			break
 	sess.close()
+
+	print(times)
+	print('Average time: %.2f' % np.mean(times[1:]))
 
 
 
