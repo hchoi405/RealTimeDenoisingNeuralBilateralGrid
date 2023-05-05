@@ -17,18 +17,31 @@ def load_exr(filename, datatype=np.float16):
 	width = dw.max.x - dw.min.x + 1
 	height = dw.max.y - dw.min.y + 1
 
-	return_matrix_ch_B = np.fromstring(infile.channels('B')[0],
-									   dtype=datatype).reshape(height,
-																 width)
-	return_matrix_ch_G = np.fromstring(infile.channels('G')[0],
-									   dtype=datatype).reshape(height,
-																 width)
-	return_matrix_ch_R = np.fromstring(infile.channels('R')[0],
-									   dtype=datatype).reshape(height,
-																 width)
-	matrix_new = np.stack(
-		(return_matrix_ch_R, return_matrix_ch_G, return_matrix_ch_B),
-		axis=-1)
+	chs = []
+	if len(header['channels']) == 3:
+		return_matrix_ch_B = np.fromstring(infile.channels('B')[0],
+										dtype=datatype).reshape(height,
+																	width)
+		return_matrix_ch_G = np.fromstring(infile.channels('G')[0],
+										dtype=datatype).reshape(height,
+																	width)
+		return_matrix_ch_R = np.fromstring(infile.channels('R')[0],
+										dtype=datatype).reshape(height,
+																	width)
+		chs = [return_matrix_ch_R, return_matrix_ch_G, return_matrix_ch_B]
+	elif len(header['channels']) == 1:
+		for c in header['channels']:
+			return_matrix_ch = np.fromstring(infile.channels(c)[0], dtype=datatype).reshape(height, width)
+			chs.append(return_matrix_ch)
+		if len(chs) == 1:
+			chs.append(np.zeros_like(chs[0]))
+			chs.append(np.zeros_like(chs[0]))
+	else:
+		print('Error: Number of channels is not 1 or 3')
+		exit(-1)
+	
+	matrix_new = np.stack(chs, axis=-1)
+
 	return matrix_new
 
 def save_exr(image, filename, datatype=np.float16):
