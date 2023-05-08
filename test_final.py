@@ -10,7 +10,7 @@ nbg_best_models = {
     "data_BistroExterior2": "sponza-moving-light",
     "data_Classroom": "sponza-glossy",
     "data_Dining-room": "sponza-glossy",
-    "data_Staircase": "san-miguel"
+    "data_Staircase2": "san-miguel"
 }
 
 def rename_directory(old_name, new_name):
@@ -44,7 +44,7 @@ for scene, model in nbg_best_models.items():
         # command = f"python network_test.py -m sponza-moving-light -s test_Falcor -r ./dataset_falcor -d data_BistroExterior2 -ts 103 -t 0"
         command = f"python network_test.py -m {model} -s test_Falcor -r /dataset_falcor/dataset_new -d {scene} -ts {num_frames} -t {i} --export_exr"
         try:
-            subprocess.check_call(command, shell=True)
+            subprocess.check_call(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as e:
             print(f"Error: {e.output.decode()}")
 

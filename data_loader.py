@@ -148,6 +148,23 @@ class dataLoader(object):
 						depth /= np.max(depth)
 						noisy = load_exr(noisy_path, datatype=np.float32)
 						GT_full_image = load_exr(GT_path, datatype=np.float32)
+						
+						# nan check
+						if np.isnan(np.any(albedo)): 
+							print("nan in albedo: ", albedo_path)
+							exit(-1)
+						if np.isnan(np.any(normal)): 
+							print("nan in normal: ", normal_path)
+							exit(-1)
+						if np.isnan(np.any(depth)): 
+							print("nan in depth: ", depth_path)
+							exit(-1)
+						if np.isnan(np.any(noisy)): 
+							print("nan in noisy: ", noisy_path)
+							exit(-1)
+						if np.isnan(np.any(GT_full_image)): 
+							print("nan in GT_full_image: ", GT_path)
+							exit(-1)
 
 					else:
 						exr_name = str(idx) + '.exr'

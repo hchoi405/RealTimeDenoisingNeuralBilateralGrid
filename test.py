@@ -36,11 +36,11 @@ start = False
 for scene, num_frames in scenes:
     # Iterate models moving files to output folder
     for model in models:
-        # Skip until (model == classroom and scene == data_Dining-room-dynamic)
-        if scene == 'data_Staircase' and model == 'san-miguel':
-            start = True
-        if not start:
-            continue
+        # # Skip until (model == classroom and scene == data_Dining-room-dynamic)
+        # if scene == 'data_Staircase' and model == 'san-miguel':
+        #     start = True
+        # if not start:
+        #     continue
 
         os.makedirs(f'output/{scene}/{model}', exist_ok=True)
 
@@ -48,9 +48,11 @@ for scene, num_frames in scenes:
         for i in range(num_frames):
             print(f'\tframe: {i}')
             
-            command = f"python network_test.py -m {model} -s test_Falcor -r /dataset_falcor -d {scene} -ts {num_frames} -t {i} --export_exr"
+            # command = f"python network_test.py -m classroom -s test -r ./dataset -d classroom -ts 60 -t 0"
+            # command = f"python network_test.py -m sponza-moving-light -s test_Falcor -r ./dataset_falcor -d data_BistroExterior2 -ts 103 -t 0"
+            command = f"python network_test.py -m {model} -s test_Falcor -r /dataset_falcor/dataset_new -d {scene} -ts {num_frames} -t {i} --export_exr"
             try:
-                subprocess.check_call(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+                subprocess.check_call(command, shell=True)
             except subprocess.CalledProcessError as e:
                 print(f"Error: {e.output.decode()}")
 
@@ -59,14 +61,15 @@ for scene, num_frames in scenes:
                 src = f'results/{scene}/result/test_out/{file}'
                 dst = f'output/{scene}/{model}/{file}'
                 os.rename(src, dst)
+            break
 
         # rename_directory(os.path.join("output", scene), os.path.join("output", f'{model}_{scene}'))
 
         # Make sure the directory exists in the NAS
         os.makedirs(f"/nas/nbg/{scene}/{model}", exist_ok=True)
 
-        # # Move all files through rsync and remove original files in asynchronous process
-        subprocess.Popen(["rsync", "-av", "--no-o", "--no-g", "--remove-source-files", 
-            f"output/{scene}/{model}/",
-            f"/nas/nbg/{scene}/{model}/"
-            ])
+        # # # Move all files through rsync and remove original files in asynchronous process
+        # subprocess.Popen(["rsync", "-av", "--no-o", "--no-g", "--remove-source-files", 
+        #     f"output/{scene}/{model}/",
+        #     f"/nas/nbg/{scene}/{model}/"
+        #     ])

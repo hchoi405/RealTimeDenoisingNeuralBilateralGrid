@@ -80,9 +80,11 @@ def compare_models(loss_fn):
                 with open(loss_filename, 'r') as f:
                     errors = [float(x) for x in f.read().splitlines()]
                 # Check if the number of errors is correct
-                if len(errors) != scene_frames:
+                if scene_frames > len(errors):
                     print(f'Number of errors in {loss_filename} is not correct.')
                     regenerate = True
+                elif scene_frames < len(errors):
+                    errors = errors[:scene_frames]
             else:
                 regenerate = True
             
