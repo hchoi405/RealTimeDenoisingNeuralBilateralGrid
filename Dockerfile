@@ -18,7 +18,8 @@ RUN apt update && apt install -y openexr libopenexr-dev
 RUN pip install --upgrade pip
 
 # Install required python packages
-RUN pip install scipy scikit-image Pillow openexr parmap tqdm
+RUN pip install scipy scikit-image Pillow parmap tqdm
+RUN pip install git+https://github.com/jamesbowman/openexrpython.git
 
 # Add non-root user
 RUN groupadd -g $GID -o $USERNAME
